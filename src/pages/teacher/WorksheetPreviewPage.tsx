@@ -146,7 +146,7 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
     let pageIndex = 0;
 
     // Height limit: Page 1 has Header (~120px), Page 2+ has minimal ContinuationHeader (~35px)
-    const getPageMaxHeight = (isFirstPage: boolean) => (isFirstPage ? 680 : 770);
+    const getPageMaxHeight = (isFirstPage: boolean) => (isFirstPage ? 820 : 920);
 
     questionsList.forEach((q: any) => {
       const qText = String(q?.question || '');
@@ -283,7 +283,7 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
             min-height: 297mm !important;
             height: 297mm !important;
             margin: 0 !important;
-            padding: 8mm 10mm 8mm 10mm !important;
+            padding: '6mm 8mm 6mm 8mm', !important;
             box-sizing: border-box !important;
             border-radius: 0 !important;
             border: none !important;
