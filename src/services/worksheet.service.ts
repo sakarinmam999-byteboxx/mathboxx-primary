@@ -182,7 +182,7 @@ export const worksheetService = {
               }
               return null;
             })
-            .filter(Boolean);
+            .filter((item): item is NonNullable<typeof item> => item !== null);
 
           if (questionsToInsert.length > 0) {
             await supabase.from('worksheet_questions').insert(questionsToInsert);
