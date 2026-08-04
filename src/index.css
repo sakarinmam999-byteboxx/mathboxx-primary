@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-main: #FAF7F2;
+  --bg-card: #FFFDF9;
+  --color-mint: #10B981;
+  --bg-mint: #D1FAE5;
+  --color-yellow: #F59E0B;
+  --bg-yellow: #FEF3C7;
+  --color-orange: #F58300;
+  --bg-orange: #FFEDD5;
+  --text-main: #1F2937;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    @apply font-sans antialiased selection:bg-amber-200 selection:text-amber-950;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-main);
+    @apply font-bold tracking-tight;
+  }
+}
+
+/* Custom Print Engine Styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  .a4-page-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    padding: 12mm 15mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+}
+
+/* Soft Pastel Multi-Color Theme Card Utilities */
+.pastel-card {
+  background-color: var(--bg-card);
+  @apply rounded-2xl border border-amber-200/60 shadow-xs transition-all duration-200;
+}
+
+.pastel-card-hover {
+  @apply hover:shadow-sm hover:border-amber-300 hover:-translate-y-0.5;
+}
+
+/* Glassmorphic Panel Utility with Soft Cream Tint */
+.glass-panel {
+  background-color: var(--bg-card);
+  @apply backdrop-blur-md border border-amber-200/60 shadow-xs;
+}
+
+/* Clean Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
