@@ -279,6 +279,45 @@ export const authService = {
   },
 
   /**
+   * Send Password Reset Email via Supabase Auth
+   */
+  async resetPasswordForEmail(email: string, redirectTo?: string) {
+    try {
+      const redirectUrl = redirectTo || `${window.location.origin}/reset-password`;
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'เกิดข้อผิดพลาดในการส่งลิงก์รีเซ็ตรหัสผ่าน' };
+    }
+  },
+
+  /**
+   * Update User Password via Supabase Auth
+   */
+  async updatePassword(newPassword: string) {
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'เกิดข้อผิดพลาดในการตั้งรหัสผ่านใหม่' };
+    }
+  },
+
+  /**
    * Sign Out
    */
   async signOut() {

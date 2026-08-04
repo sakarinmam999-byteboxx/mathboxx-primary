@@ -88,9 +88,9 @@ export const LoginPage: React.FC<PageProps> = ({ onNavigate }) => {
               <input type="checkbox" className="rounded text-orange-500 focus:ring-orange-400 w-4 h-4" />
               <span>จดจำฉันในระบบ</span>
             </label>
-            <a href="#" onClick={(e) => { e.preventDefault(); alert('ระบบรีเซ็ตรหัสผ่านกำลังเปิดให้บริการ'); }} className="text-orange-600 font-bold hover:underline">
+            <button type="button" onClick={() => onNavigate('/forgot-password')} className="text-orange-600 font-bold hover:underline">
               ลืมรหัสผ่าน?
-            </a>
+            </button>
           </div>
 
           <Button

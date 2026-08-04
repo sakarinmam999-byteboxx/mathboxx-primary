@@ -11,6 +11,7 @@ import { PricingPage } from './pages/public/PricingPage';
 import { LoginPage } from './pages/public/LoginPage';
 import { RegisterPage } from './pages/public/RegisterPage';
 import { ForgotPasswordPage } from './pages/public/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/public/ResetPasswordPage';
 
 // Teacher Pages
 import { DashboardPage } from './pages/teacher/DashboardPage';
@@ -35,7 +36,15 @@ import { AdminUsageStatsPage } from './pages/admin/AdminUsageStatsPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 
 export function App() {
-  const [currentPath, setCurrentPath] = useState<string>('/');
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    // Detect password recovery redirect from email link
+    const hash = window.location.hash || '';
+    const path = window.location.pathname || '';
+    if (hash.includes('type=recovery') || path === '/reset-password') {
+      return '/reset-password';
+    }
+    return '/';
+  });
 
   const handleNavigate = (path: string) => {
     setCurrentPath(path);
@@ -43,7 +52,7 @@ export function App() {
   };
 
   // Determine Layout Group based on Route Prefix
-  const isPublicRoute = ['/', '/pricing', '/login', '/register', '/forgot-password'].includes(currentPath);
+  const isPublicRoute = ['/', '/pricing', '/login', '/register', '/forgot-password', '/reset-password'].includes(currentPath);
   const isAdminRoute = currentPath.startsWith('/admin');
   const isTeacherRoute = currentPath.startsWith('/app');
 
@@ -60,6 +69,8 @@ export function App() {
         return <RegisterPage onNavigate={handleNavigate} />;
       case '/forgot-password':
         return <ForgotPasswordPage onNavigate={handleNavigate} />;
+      case '/reset-password':
+        return <ResetPasswordPage onNavigate={handleNavigate} />;
 
       // Teacher Routes
       case '/app/dashboard':
