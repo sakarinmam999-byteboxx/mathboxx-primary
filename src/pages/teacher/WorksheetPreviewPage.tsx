@@ -134,27 +134,51 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
   }, [perms.effectivePlanCode, perms.watermarkText]);
 
   // ============================================================
-  // WORKSHEET PAGINATION (Page 1 = 4 Qs, Sub = 5 Qs)
+  // DYNAMIC WORKSHEET PAGINATION (Smart Height-based Fitting)
   // ============================================================
 
   const worksheetPages = useMemo<WorksheetPage[]>(() => {
     if (!questionsList.length) return [{ questions: [] }];
 
     const pages: WorksheetPage[] = [];
-    const totalQ = questionsList.length;
+    let currentPage: any[] = [];
+    let currentHeight = 0;
+    let pageIndex = 0;
 
-    const firstPageCount = totalQ <= 5 ? totalQ : 4;
-    const subPageCount = 5;
+    // Height limit: Page 1 has Header (~120px), Page 2+ has minimal ContinuationHeader (~35px)
+    const getPageMaxHeight = (isFirstPage: boolean) => (isFirstPage ? 680 : 770);
 
-    pages.push({ questions: questionsList.slice(0, firstPageCount) });
+    questionsList.forEach((q: any) => {
+      const qText = String(q?.question || '');
+      const choices = [q?.choice_a, q?.choice_b, q?.choice_c, q?.choice_d].filter(Boolean);
+      
+      // Calculate realistic item height in px
+      let qHeight = 38; // base badge + spacing
+      qHeight += Math.ceil(Math.max(qText.length, 1) / 75) * 22; // multi-line text
+      if (choices.length > 0) {
+        qHeight += choices.some((c) => String(c).length > 25) ? 65 : 36;
+      } else {
+        qHeight += 32; // blank answer space
+      }
 
-    let offset = firstPageCount;
-    while (offset < totalQ) {
-      pages.push({ questions: questionsList.slice(offset, offset + subPageCount) });
-      offset += subPageCount;
+      const maxHeight = getPageMaxHeight(pageIndex === 0);
+
+      if (currentPage.length > 0 && currentHeight + qHeight > maxHeight) {
+        pages.push({ questions: currentPage });
+        currentPage = [];
+        currentHeight = 0;
+        pageIndex++;
+      }
+
+      currentPage.push(q);
+      currentHeight += qHeight;
+    });
+
+    if (currentPage.length > 0) {
+      pages.push({ questions: currentPage });
     }
 
-    return pages;
+    return pages.length ? pages : [{ questions: [] }];
   }, [questionsList]);
 
   // ============================================================
@@ -167,11 +191,11 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
     const pages: WorksheetPage[] = [];
     let current: any[] = [];
     let currentHeight = 0;
-    const MAX_PAGE_HEIGHT = 700; // Printable A4 Height Limit for Answer Key
+    const MAX_PAGE_HEIGHT = 740; // Printable A4 Height Limit for Answer Key
 
     questionsList.forEach((q: any) => {
       const expLen = String(q?.explanation || q?.answer_explanation || q?.solution_steps || q?.explanation_text || '').length;
-      const qHeight = 50 + (q?.question ? 25 : 0) + (expLen ? 28 + Math.ceil(expLen / 70) * 18 : 0);
+      const qHeight = 45 + (q?.question ? 22 : 0) + (expLen ? 26 + Math.ceil(expLen / 75) * 16 : 0);
 
       if (current.length > 0 && currentHeight + qHeight > MAX_PAGE_HEIGHT) {
         pages.push({ questions: current });
@@ -259,7 +283,7 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
             min-height: 297mm !important;
             height: 297mm !important;
             margin: 0 !important;
-            padding: 8mm 12mm 8mm 12mm !important;
+            padding: 8mm 10mm 8mm 10mm !important;
             box-sizing: border-box !important;
             border-radius: 0 !important;
             border: none !important;
@@ -362,7 +386,7 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
                   width: '210mm',
                   height: '297mm',
                   minHeight: '297mm',
-                  padding: '8mm 12mm 8mm 12mm',
+                  padding: '8mm 10mm 8mm 10mm',
                   boxSizing: 'border-box',
                   transform: `scale(${zoomLevel / 100})`,
                   transformOrigin: 'top center',
@@ -441,7 +465,7 @@ export const WorksheetPreviewPage: React.FC<PageProps> = ({
                     width: '210mm',
                     height: '297mm',
                     minHeight: '297mm',
-                    padding: '8mm 12mm 8mm 12mm',
+                    padding: '8mm 10mm 8mm 10mm',
                     boxSizing: 'border-box',
                     transform: `scale(${zoomLevel / 100})`,
                     transformOrigin: 'top center',
