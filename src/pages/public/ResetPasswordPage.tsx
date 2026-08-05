@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, KeyRound } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -16,6 +16,22 @@ export const ResetPasswordPage: React.FC<PageProps> = ({ onNavigate }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Parse recovery error parameters if link expired or invalid
+    const hash = window.location.hash || '';
+    const search = window.location.search || '';
+
+    if (hash.includes('error=') || search.includes('error=')) {
+      const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
+      const searchParams = new URLSearchParams(search);
+      const desc =
+        hashParams.get('error_description') ||
+        searchParams.get('error_description') ||
+        'ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุแล้ว กรุณาขอลิงก์ใหม่อีกครั้ง';
+      setErrorMessage(decodeURIComponent(desc));
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

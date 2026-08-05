@@ -279,11 +279,23 @@ export const authService = {
   },
 
   /**
+   * Helper to compute dynamic reset password redirect URL for Production and Localhost
+   */
+  getResetPasswordRedirectUrl(): string {
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      const origin = window.location.origin.replace(/\/$/, '');
+      return `${origin}/reset-password`;
+    }
+    const appUrl = (import.meta as any).env?.VITE_APP_URL || 'https://mathboxx-primary.vercel.app';
+    return `${appUrl.replace(/\/$/, '')}/reset-password`;
+  },
+
+  /**
    * Send Password Reset Email via Supabase Auth
    */
   async resetPasswordForEmail(email: string, redirectTo?: string) {
     try {
-      const redirectUrl = redirectTo || `${window.location.origin}/reset-password`;
+      const redirectUrl = redirectTo || this.getResetPasswordRedirectUrl();
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       });

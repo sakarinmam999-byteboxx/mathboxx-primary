@@ -21,7 +21,7 @@ export const ForgotPasswordPage: React.FC<PageProps> = ({ onNavigate }) => {
     setIsLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/reset-password`;
+      const redirectUrl = authService.getResetPasswordRedirectUrl();
       const result = await authService.resetPasswordForEmail(email, redirectUrl);
 
       if (!result.success) {
