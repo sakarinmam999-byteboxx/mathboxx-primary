@@ -282,10 +282,15 @@ export const authService = {
    * Helper to compute dynamic reset password redirect URL for Production and Localhost
    */
   getResetPasswordRedirectUrl(): string {
-    if (typeof window !== 'undefined' && window.location?.origin) {
-      const origin = window.location.origin.replace(/\/$/, '');
-      return `${origin}/reset-password`;
+    if (typeof window !== 'undefined' && window.location?.hostname) {
+      const hostname = window.location.hostname;
+      // If running locally, redirect back to current localhost port
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        const origin = window.location.origin.replace(/\/$/, '');
+        return `${origin}/reset-password`;
+      }
     }
+    // For Production / Vercel deployments: Always use canonical Production URL
     const appUrl = (import.meta as any).env?.VITE_APP_URL || 'https://mathboxx-primary.vercel.app';
     return `${appUrl.replace(/\/$/, '')}/reset-password`;
   },
