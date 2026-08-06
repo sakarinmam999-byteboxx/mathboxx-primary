@@ -42,11 +42,12 @@ export const authService = {
         return { success: false, error: 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร' };
       }
 
-      // Step 1: Call Supabase Auth signUp
+      // Step 1: Call Supabase Auth signUp with emailRedirectTo
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
+          emailRedirectTo: this.getAppProductionUrl(),
           data: {
             teacher_name: teacherName,
             school_name: schoolName,
@@ -279,20 +280,25 @@ export const authService = {
   },
 
   /**
+   * Helper to compute base Production and Localhost App URL
+   */
+  getAppProductionUrl(): string {
+    if (typeof window !== 'undefined' && window.location?.hostname) {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return window.location.origin.replace(/\/$/, '');
+      }
+    }
+    const appUrl = (import.meta as any).env?.VITE_APP_URL || 'https://mathboxx-primary-one.vercel.app';
+    return appUrl.replace(/\/$/, '');
+  },
+
+  /**
    * Helper to compute dynamic reset password redirect URL for Production and Localhost
    */
   getResetPasswordRedirectUrl(): string {
-    if (typeof window !== 'undefined' && window.location?.hostname) {
-      const hostname = window.location.hostname;
-      // If running locally, redirect back to current localhost port
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        const origin = window.location.origin.replace(/\/$/, '');
-        return `${origin}/reset-password`;
-      }
-    }
-    // For Production / Vercel deployments: Always use canonical Production URL
-    const appUrl = (import.meta as any).env?.VITE_APP_URL || 'https://mathboxx-primary.vercel.app';
-    return `${appUrl.replace(/\/$/, '')}/reset-password`;
+    const baseUrl = this.getAppProductionUrl();
+    return `${baseUrl}/reset-password`;
   },
 
   /**
