@@ -43,6 +43,9 @@ export function App() {
     if (hash.includes('type=recovery') || path === '/reset-password') {
       return '/reset-password';
     }
+    if (path && path !== '/' && path !== '/index.html') {
+      return path;
+    }
     return '/';
   });
 
